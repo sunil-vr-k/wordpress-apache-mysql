@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  mysql:
+    image: 'mysql:8.0'
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-secret}
+      MYSQL_DATABASE: ${DB_DATABASE:-mysql_db}
+      MYSQL_USER: ${DB_USERNAME:-root}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+    volumes:
+      - 'wpmysql:/var/lib/mysql'
+
+  wordpress:
+    depends_on:
+      - mysql
+    image: wordpress:5.7-apache
+
+    ports:
+      - '80:80'
+    environment:
+      WORDPRESS_DB_HOST: mysql
+      WORDPRESS_DB_USER: root
+      WORDPRESS_DB_PASSWORD: secret
+      WORDPRESS_DB_NAME: mysql_db
+    volumes:
+      - './:/var/www/html'
+
+volumes:
+  wpmysql: {}
